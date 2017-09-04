@@ -1,12 +1,13 @@
 const xlsx = require('node-xlsx').default
 const fs = require('fs')
-
+const Excel = require('excel-class');
+const path = require('path');
 // Parse 数据源
 let sourceFile_1 = xlsx.parse(`${__dirname}/data/test1.xls`)
 let sourceFile_2 = xlsx.parse(`${__dirname}/data/test2.xls`)
 
 // 将需要的数据提取出来
-let DataFilter_1 = sourceFile_1[0] // 取sheet1所有数据
+let dataFilter_1 = sourceFile_1[0] // 取sheet1所有数据
                   .data // 取出数据，并列的name属性是sheet名
                   .slice(18, -1) // 取出从锅研所到末尾的所有数据
                   .filter((value, index) => { // 将无效“本厂”数据行去掉
@@ -15,7 +16,7 @@ let DataFilter_1 = sourceFile_1[0] // 取sheet1所有数据
                   .map((value, index) => { // 将取出的数据处理成需要的格式
                     return [value[1].trim(), value[6]] // 1是单位名称，trim去空格，6是当月消耗
                   })
-let DataFilter_2 = sourceFile_2[0] // 取sheet1所有数据
+let dataFilter_2 = sourceFile_2[0] // 取sheet1所有数据
                   .data // 取出数据，并列的name属性是sheet名
                   .slice(4, 24) // 取出有效数据行
                   .filter((value, index) => { // 将无效如“本厂”之类的数据过滤掉
@@ -27,17 +28,3 @@ let DataFilter_2 = sourceFile_2[0] // 取sheet1所有数据
                   })
 
 // test data
-// console.log(DataFilter_1)
-// console.log(DataFilter_2)
-
-// build and output
-let buffer = xlsx.build([
-  {name: "sheet1", data: DataFilter_1},
-  {name: "sheet2", data: DataFilter_2}
-]); // Returns a buffer
-
-// 输出文件
-fs.writeFile('./output/output.xls', buffer, err => {
-  if (err) throw err
-  console.log('写入完成!')
-})
